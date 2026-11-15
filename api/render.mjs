@@ -44,7 +44,10 @@ async function renderPage() {
 
 async function handle(req) {
   if (req.method !== 'POST') return new Response('POST only', { status: 405 });
-  if (!sameKey(req.headers.get('authorization') ?? '', `Bearer ${process.env.OPENTEMPL_DRAFTS_KEY ?? ''}`)) return new Response('forbidden', { status: 403 });
+  // Without a key configured, "Bearer " would match an empty secret, so refuse outright.
+  const secret = process.env.OPENTEMPL_DRAFTS_KEY;
+  if (!secret || secret.length < 16) return new Response('not configured', { status: 503 });
+  if (!sameKey(req.headers.get('authorization') ?? '', `Bearer ${secret}`)) return new Response('forbidden', { status: 403 });
   const body = await req.json();
   try {
     const p = await renderPage();
