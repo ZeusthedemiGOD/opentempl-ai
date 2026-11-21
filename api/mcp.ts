@@ -16,6 +16,11 @@ async function handle(request: Request): Promise<Response> {
   // A browser that wanders here gets pointed at the page that explains how to connect.
   if (request.method === 'GET' && !(request.headers.get('accept') ?? '').includes('text/event-stream'))
     return new Response(null, { status: 302, headers: { Location: '/mcp', ...CORS } });
+  // A stateless server has nothing to push, and the SDK ends the stream as soon as it
+  // opens. Clients read that as a dropped connection and reconnect forever, so say no
+  // up front; the spec lets a server refuse the GET stream with a 405.
+  if (request.method === 'GET')
+    return new Response(null, { status: 405, headers: { Allow: 'POST, OPTIONS', ...CORS } });
   const transport = new WebStandardStreamableHTTPServerTransport({ sessionIdGenerator: undefined, enableJsonResponse: true });
   const server = createServer();
   await server.connect(transport);
