@@ -943,10 +943,13 @@ function applyOp(d: Design, op: Op, src: Sources, n: number) {
   fail(`${where}: unknown edit. Use set_text, style, set_image, add, duplicate, remove, recolor, align, distribute, page, add_page, move_page, arrange or title`);
 }
 
-export function buildDesign(draft: Draft, src: Sources): Design {
-  const d = startDesign(draft, src);
-  draft.ops.forEach((op, i) => applyOp(d, op, src, i));
+export function applyOps(d: Design, ops: Op[], src: Sources): Design {
+  ops.forEach((op, i) => applyOp(d, op, src, i));
   return d;
+}
+
+export function buildDesign(draft: Draft, src: Sources): Design {
+  return applyOps(startDesign(draft, src), draft.ops, src);
 }
 
 // Every library and web image a design needs, so the editor can fetch them.
@@ -1008,7 +1011,7 @@ function describe(e: Element, d: Design): string {
       return `line from ${r(p.x1)},${r(p.y1)} to ${r(p.x2)},${r(p.y2)} · ${e.width}px ${e.color} ${e.dash}${e.start !== 'none' || e.end !== 'none' ? ` caps ${e.start}/${e.end}` : ''}${e.opacity < 1 ? ` opacity ${e.opacity}` : ''}`;
     }
     case 'image': {
-      const src = !e.assetId ? 'EMPTY frame' : e.assetId.startsWith('web:') ? `photo ${d.images[e.assetId]?.url ?? ''}` : `library ${e.assetId.slice(4)}`;
+      const src = !e.assetId ? 'EMPTY frame' : e.assetId.startsWith('web:') ? `photo ${d.images[e.assetId]?.url ?? ''}` : e.assetId.startsWith('lib:') ? `library ${e.assetId.slice(4)}` : `asset ${e.assetId}`;
       return `image ${src}${e.mask ? ` mask ${e.mask}` : ''}${e.radius ? ` radius ${e.radius}` : ''}${e.filters.preset !== 'none' ? ` filter ${e.filters.preset}` : ''}${e.filters.duotone ? ` duotone ${e.filters.duotone.join('/')}` : ''} · ${box}`;
     }
     case 'svg': {

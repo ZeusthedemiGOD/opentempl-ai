@@ -4,6 +4,7 @@ import type { PanelId } from '../editor/state';
 import { Icon } from '../ui/icons';
 
 const ITEMS: { id: PanelId; label: string; icon: string }[] = [
+  { id: 'ai', label: 'AI', icon: 'nav-ai' },
   { id: 'templates', label: 'Templates', icon: 'nav-templates' },
   { id: 'elements', label: 'Elements', icon: 'nav-elements' },
   { id: 'text', label: 'Text', icon: 'nav-text' },

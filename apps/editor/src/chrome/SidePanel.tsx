@@ -5,6 +5,7 @@ import type { PanelId } from '../editor/state';
 import { Icon } from '../ui/icons';
 
 const PANELS: Partial<Record<Exclude<PanelId, null>, { title: string; C: ComponentType }>> = {
+  ai: { title: 'AI designer', C: lazy(() => import('../ai/AgentPanel')) },
   templates: { title: 'Templates', C: lazy(() => import('../panels/TemplatesPanel')) },
   elements: { title: 'Elements', C: lazy(() => import('../panels/ElementsPanel')) },
   text: { title: 'Text', C: lazy(() => import('../panels/TextPanel')) },

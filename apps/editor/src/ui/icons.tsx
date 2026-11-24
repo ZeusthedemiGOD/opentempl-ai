@@ -124,6 +124,7 @@ function toPath(g: Grid) {
 
 const DEFS: Record<string, Op[]> = {
   // ---- rail: one family, 2 px outlines, 14 px box ----
+  'nav-ai': [['c', 8, 8, 6], ['r', 7, 1, 2, 3], ['r', 7, 12, 2, 3], ['r', 1, 7, 3, 2], ['r', 12, 7, 3, 2]],
   'nav-templates': [['o', 1, 1, 14, 14], ['r', 1, 5, 14, 2], ['r', 6, 5, 2, 10]],
   'nav-elements': [['o', 1, 7, 8, 8], ['c', 10.5, 5.5, 4.5]],
   'nav-text': [['r', 2, 2, 12, 2], ['r', 7, 2, 2, 12]],

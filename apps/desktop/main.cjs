@@ -76,8 +76,22 @@ app.whenReady().then(() => {
   const allowed = new Set(['clipboard-sanitized-write', 'clipboard-read', 'fullscreen']);
   session.defaultSession.setPermissionRequestHandler((_wc, permission, done) => done(allowed.has(permission)));
   session.defaultSession.setPermissionCheckHandler((_wc, permission) => allowed.has(permission));
-  protocol.handle('tavla', (req) => {
+  protocol.handle('tavla', async (req) => {
     const { pathname } = new URL(req.url);
+    if (pathname === '/api/nvidia') {
+      if (req.method !== 'POST') return new Response('Use POST', { status: 405 });
+      const authorization = req.headers.get('authorization');
+      const upstream = await net.fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          accept: 'application/json',
+          ...(authorization ? { authorization } : {}),
+        },
+        body: await req.text(),
+      });
+      return new Response(upstream.body, { status: upstream.status, headers: { 'content-type': 'application/json' } });
+    }
     const target = path.normalize(path.join(APP_DIR, decodeURIComponent(pathname)));
     if (!target.startsWith(APP_DIR + path.sep)) return new Response('Not found', { status: 404 });
     const file = fs.existsSync(target) && fs.statSync(target).isFile() ? target : path.join(APP_DIR, 'index.html');

@@ -5,6 +5,7 @@ import { COBALT } from '../doc/colors';
 export type Tool = 'select' | 'hand' | 'text' | 'rect' | 'ellipse' | 'line' | 'draw' | 'pen' | 'sticky';
 
 export type PanelId =
+  | 'ai'
   | 'templates'
   | 'elements'
   | 'text'
